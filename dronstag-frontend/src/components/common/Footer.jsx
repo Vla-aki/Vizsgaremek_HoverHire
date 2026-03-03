@@ -1,3 +1,4 @@
+// src/components/common/Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -89,19 +90,19 @@ const Footer = () => {
             <h4 className="text-white dark:text-white font-semibold mb-4 transition-all duration-700">Kövess minket</h4>
             <div className="flex flex-wrap gap-3">
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-300">
-                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">📘</span>
+                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">f</span>
               </a>
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-300">
-                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">📷</span>
+                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">ig</span>
               </a>
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-300">
-                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">📺</span>
+                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">yt</span>
               </a>
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-300">
-                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">🐦</span>
+                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">x</span>
               </a>
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-300">
-                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">🔗</span>
+                <span className="text-lg text-gray-300 dark:text-gray-300 transition-all duration-700">in</span>
               </a>
             </div>
           </div>
@@ -113,43 +114,31 @@ const Footer = () => {
         <div className="container mx-auto px-6 transition-all duration-700">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
             
-            {/* Cím */}
-            <div className="flex items-start gap-3 transition-all duration-700">
-              <span className="text-blue-500 dark:text-blue-400 text-xl transition-all duration-700">📍</span>
-              <div className="transition-all duration-700">
-                <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Székhely</p>
-                <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">1137 Budapest<br />Drón utca 12.</p>
-              </div>
+            {/* Cím - ikon nélkül */}
+            <div className="transition-all duration-700">
+              <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Székhely</p>
+              <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">1137 Budapest<br />Drón utca 12.</p>
             </div>
 
-            {/* Telefon */}
-            <div className="flex items-start gap-3 transition-all duration-700">
-              <span className="text-blue-500 dark:text-blue-400 text-xl transition-all duration-700">📞</span>
-              <div className="transition-all duration-700">
-                <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Telefon</p>
-                <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">+36 30 123 4567</p>
-                <p className="text-gray-500 dark:text-gray-500 text-xs transition-all duration-700">H-P: 9-18</p>
-              </div>
+            {/* Telefon - ikon nélkül */}
+            <div className="transition-all duration-700">
+              <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Telefon</p>
+              <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">+36 30 123 4567</p>
+              <p className="text-gray-500 dark:text-gray-500 text-xs transition-all duration-700">H-P: 9-18</p>
             </div>
 
-            {/* Email */}
-            <div className="flex items-start gap-3 transition-all duration-700">
-              <span className="text-blue-500 dark:text-blue-400 text-xl transition-all duration-700">✉️</span>
-              <div className="transition-all duration-700">
-                <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Email</p>
-                <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">info@hoverhire.hu</p>
-                <p className="text-gray-500 dark:text-gray-500 text-xs transition-all duration-700">Ügyelet: info@hoverhire.hu</p>
-              </div>
+            {/* Email - ikon nélkül */}
+            <div className="transition-all duration-700">
+              <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Email</p>
+              <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">info@hoverhire.hu</p>
+              <p className="text-gray-500 dark:text-gray-500 text-xs transition-all duration-700">Ügyelet: info@hoverhire.hu</p>
             </div>
 
-            {/* Nyitvatartás */}
-            <div className="flex items-start gap-3 transition-all duration-700">
-              <span className="text-blue-500 dark:text-blue-400 text-xl transition-all duration-700">🕒</span>
-              <div className="transition-all duration-700">
-                <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Nyitvatartás</p>
-                <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">Hétfő - Péntek: 9:00 - 18:00</p>
-                <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">Szombat - Vasárnap: Ügyelet</p>
-              </div>
+            {/* Nyitvatartás - ikon nélkül */}
+            <div className="transition-all duration-700">
+              <p className="font-medium text-white dark:text-white mb-1 transition-all duration-700">Nyitvatartás</p>
+              <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">Hétfő - Péntek: 9:00 - 18:00</p>
+              <p className="text-gray-400 dark:text-gray-400 transition-all duration-700">Szombat - Vasárnap: Ügyelet</p>
             </div>
           </div>
         </div>
