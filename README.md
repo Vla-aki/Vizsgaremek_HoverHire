@@ -2,8 +2,7 @@
 
 ## Tartalomjegyzék
 
-Projekt célja
-
+- Projekt célja
 - 1. Regisztráció és bejelentkezés modul
 - 2. Megbízói és pilóta profilok
 - 3. Projektfeladás és kezelés
@@ -17,8 +16,8 @@ Projekt célja
 - 11. Tesztelési terv
 - 12. Összegzés
 
-
-Projekt célja: Egy modern, könnyen kezelhető weboldal építése, ahol a megbízók és drónpilóták könnyedén egymásra találnak.
+## Projekt célja:
+Egy modern, könnyen kezelhető weboldal építése, ahol a megbízók és drónpilóták könnyedén egymásra találnak.
 Az ötlet onnan jött, hogy rengeteg megbízó keres profi drónost, a pilóták pedig munkát, de nincs egy igazán jól működő magyar platform, ahol ezt megtehetnék.
 Ezért született a HoverHire, ahol minden egy helyen van: projektfeladás, ajánlatküldés, szerződéskötés és fizetés.
 Magyarország első számú drónos piactere szeretnénk lenni, ahol gyorsan, egyszerűen és biztonságosan lehet üzletelni.
@@ -28,12 +27,12 @@ A rendszer ellenőrzi, hogy az email cím még nem szerepel-e az adatbázisban, 
 Fejlesztés közben egyszerűsítettük a dolgot: bármilyen jelszóval be lehet lépni, és a szerepkört is ki lehet próbálgatni. Élesben persze komolyabb biztonság lesz, jelszótitkosítással és tokenes azonosítással.
 ## 2. Profilok és szerepkörök
 Kétféle felhasználó van, teljesen más lehetőségekkel.
-# Aki megbízó:
+### Aki megbízó:
 • Feladhatja a munkákat
 • Válogathat a beérkezett ajánlatok közül
 • Szerződést köthet a kiválasztott pilótával
 • Értékelheti az elkészült munkát
-# Aki pilóta:
+### Aki pilóta:
 • Böngészhet az elérhető projektek között
 • Árajánlatot adhat rájuk
 • Szerződhet a megbízóval
@@ -42,9 +41,9 @@ Kétféle felhasználó van, teljesen más lehetőségekkel.
 A profilokat mindenki testreszabhatja: lehet profilkép, bemutatkozás, szakterületek, óradíj és hogy mikor érhető el. A pilóták még képeket is feltölthetnek korábbi munkáikról.
 ## 3. Projektfeladás
 A megbízók három egyszerű lépésben adhatják fel a munkákat:
-# Első kör: projekt címe, kategória (fotó, videó, ellenőrzés, térképezés, szállítás) és részletes leírás
-# Második kör: pontos helyszín, mennyit szánnak rá (fix összeg vagy óradíj), határidő
-# Harmadik kör: milyen készségek kellenek hozzá, aztán egy összefoglaló és a véglegesítés
+• Első kör: projekt címe, kategória (fotó, videó, ellenőrzés, térképezés, szállítás) és részletes leírás
+• Második kör: pontos helyszín, mennyit szánnak rá (fix összeg vagy óradíj), határidő
+• Harmadik kör: milyen készségek kellenek hozzá, aztán egy összefoglaló és a véglegesítés
 A feladott projektek azonnal megjelennek a listában, ahol a pilóták megtalálhatják őket. A megbízók a saját felületükön követhetik, hogy állnak a munkák és mennyi ajánlat érkezett rájuk.
 ## 4. Ajánlatküldés
 A pilóták a számukra szimpatikus projektekre küldhetnek ajánlatot. Meg kell adniuk:
