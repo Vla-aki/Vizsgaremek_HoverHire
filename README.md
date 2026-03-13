@@ -2,19 +2,19 @@
 
 ## Tartalomjegyzék
 
-- Projekt célja
-- 1. Regisztráció és bejelentkezés modul
-- 2. Megbízói és pilóta profilok
-- 3. Projektfeladás és kezelés
-- 4. Ajánlattételi rendszer
-- 5. Szerződéskezelő modul
-- 6. Pilóták keresése és értékelése
-- 7. Üzenetküldő rendszer
-- 8. Bevételkövetés pilótáknak
-- 9. Kapcsolat és információk
-- 10. Felhasználói felület és dizájn
-- 11. Tesztelési terv
-- 12. Összegzés
+* [Projekt célja](#projekt-célja)
+* [1. Regisztráció és bejelentkezés modul](#1-regisztráció-és-bejelentkezés-modul)
+* [2. Profilok és szerepkörök](#2-profilok-és-szerepkörök)
+* [3. Projektfeladás](#3-projektfeladás)
+* [4. Ajánlatküldés](#4-ajánlatküldés)
+* [5. Szerződéskötés](#5-szerződéskötés)
+* [6. Pilótakereső](#6-pilótakereső)
+* [7. Üzenetváltás](#7-üzenetváltás)
+* [8. Bevételkövetés](#8-bevételkövetés)
+* [9. Kapcsolat és infók](#9-kapcsolat-és-infók)
+* [10. Kinézet és dizájn](#10-kinézet-és-dizájn)
+* [11. Tesztelés](#11-tesztelés)
+* [12. Összegzés](#12-összegzés)
 
 ## Projekt célja:
 Egy modern, könnyen kezelhető weboldal építése, ahol a megbízók és drónpilóták könnyedén egymásra találnak.
