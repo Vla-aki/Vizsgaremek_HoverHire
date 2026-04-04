@@ -18,6 +18,9 @@ const Landing = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [stats, setStats] = useState({ jobs: 0, freelancers: 0, completed: 0, earnings: 0 });
+  const [jobs, setJobs] = useState([]);
+  const [freelancers, setFreelancers] = useState([]);
+  const [targetStats, setTargetStats] = useState({ jobs: 1247, freelancers: 528, completed: 9876, earnings: 2450000 });
 
   // ========== REFERENCIÁK ==========
   const heroRef = useRef(null);
@@ -58,12 +61,6 @@ const Landing = () => {
 
   // ========== STATISZTIKA ANIMÁCIÓ ==========
   useEffect(() => {
-    const targetStats = { 
-      jobs: 1247, 
-      freelancers: 528, 
-      completed: 9876, 
-      earnings: 2450000 
-    };
     const duration = 2000;
     let startTime = Date.now();
     let animationFrame;
@@ -86,6 +83,64 @@ const Landing = () => {
     
     animationFrame = requestAnimationFrame(updateStats);
     return () => cancelAnimationFrame(animationFrame);
+  }, [targetStats]);
+
+  // ========== ADATOK LEKÉRÉSE (ADATBÁZIS) ==========
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        // 1. Statisztikák lekérése
+        const statsRes = await fetch(`${apiUrl}/projects/system-stats`);
+        const statsData = await statsRes.json();
+        if (statsData.success && statsData.stats) {
+          setTargetStats({
+            jobs: statsData.stats.jobs || 1247,
+            freelancers: statsData.stats.freelancers || 528,
+            completed: statsData.stats.completed || 1200,
+            earnings: statsData.stats.earnings || 2450000
+          });
+        }
+
+        // 2. Legfrissebb projektek lekérése
+        const projRes = await fetch(`${apiUrl}/projects`);
+        const projData = await projRes.json();
+        if (projData.success) {
+          const formattedJobs = projData.projects.map(p => ({
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            budget: p.budget,
+            budgetType: p.budget_type,
+            location: p.location,
+            category: p.category,
+            postedDate: new Date(p.created_at).toLocaleDateString('hu-HU'),
+            deadline: new Date(p.deadline).toLocaleDateString('hu-HU'),
+            proposals: p.proposals_count,
+            skills: p.skills_required || [],
+            client: {
+              name: p.customer_name,
+              rating: 5.0,
+              reviews: 0,
+              verified: true
+            },
+            featured: p.featured === 1
+          }));
+          setJobs(formattedJobs.slice(0, 6)); // Csak a legújabb 6 projekt
+        }
+
+        // 3. Kiemelt pilóták lekérése
+        const pilotRes = await fetch(`${apiUrl}/auth/pilots`);
+        const pilotData = await pilotRes.json();
+        if (pilotData.success) {
+          setFreelancers(pilotData.pilots.slice(0, 6)); // Csak a top 6 pilóta
+        }
+      } catch (error) {
+        console.error("Hiba az adatok lekérésekor:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   // ========== JOBS ADATOK ==========
@@ -96,129 +151,6 @@ const Landing = () => {
     { id: 'inspection', name: 'Ellenőrzés', count: 289 },
     { id: 'mapping', name: 'Térképezés', count: 178 },
     { id: 'delivery', name: 'Szállítás', count: 92 }
-  ];
-
-  const jobs = [
-    {
-      id: 1,
-      title: "Drónfotózás ingatlanhoz - 10 ingatlan",
-      description: "Budapesti luxusingatlanok fotózásához keresek profi drónost. 10 különböző helyszín, 20-30 kép/ingatlan.",
-      budget: 250,
-      budgetType: "fix",
-      location: "Budapest",
-      category: "photography",
-      postedDate: "2026.03.01.",
-      deadline: "2026.03.15.",
-      proposals: 8,
-      skills: ["légifotó", "ingatlan", "photoshop"],
-      client: {
-        name: "Ingatlan.com Zrt.",
-        rating: 4.9,
-        reviews: 234,
-        verified: true
-      },
-      featured: true
-    },
-    {
-      id: 2,
-      title: "Ipari csarnok ellenőrzése - szerkezetvizsgálat",
-      description: "5000m2-es ipari csarnok tetőszerkezetének ellenőrzése hőkamerás drónnal. Részletes jelentés kell, fotókkal.",
-      budget: 65,
-      budgetType: "hourly",
-      location: "Győr",
-      category: "inspection",
-      postedDate: "2026.03.02.",
-      deadline: "2026.03.20.",
-      proposals: 3,
-      skills: ["hőkamera", "ipari", "szerkezetvizsgálat"],
-      client: {
-        name: "Győri Ipari Park",
-        rating: 4.7,
-        reviews: 56,
-        verified: true
-      },
-      featured: false
-    },
-    {
-      id: 3,
-      title: "Mezőgazdasági terület térképezés - NDVI elemzés",
-      description: "120 hektáros búzatábla NDVI elemzése, 3D modell készítése. Részletes jelentés a növényegészségügyi állapotról.",
-      budget: 480,
-      budgetType: "fix",
-      location: "Bács-Kiskun",
-      category: "mapping",
-      postedDate: "2026.02.28.",
-      deadline: "2026.03.25.",
-      proposals: 5,
-      skills: ["NDVI", "térképezés", "mezőgazdaság"],
-      client: {
-        name: "Kiskunsági Mezőgazdasági Zrt.",
-        rating: 4.8,
-        reviews: 112,
-        verified: true
-      },
-      featured: true
-    },
-    {
-      id: 4,
-      title: "Esküvői drónvideó - 8 órás rendezvény",
-      description: "Esküvői helyszín és ceremónia drónos felvétele. 8 órás rendezvény, 3-5 perces összeállítás kell.",
-      budget: 120,
-      budgetType: "hourly",
-      location: "Visegrád",
-      category: "videography",
-      postedDate: "2026.03.03.",
-      deadline: "2026.04.01.",
-      proposals: 12,
-      skills: ["esküvő", "videózás", "utómunka"],
-      client: {
-        name: "Kovácsék",
-        rating: 5.0,
-        reviews: 8,
-        verified: false
-      },
-      featured: false
-    },
-    {
-      id: 5,
-      title: "Napelempark ellenőrzés - hőkamerás diagnosztika",
-      description: "5MW-s napelempark paneljeinek ellenőrzése hőkamerával. Hibás panelek azonosítása, részletes jelentés.",
-      budget: 1800,
-      budgetType: "fix",
-      location: "Kecskemét",
-      category: "inspection",
-      postedDate: "2026.02.25.",
-      deadline: "2026.03.10.",
-      proposals: 6,
-      skills: ["napelem", "hőkamera", "diagnosztika"],
-      client: {
-        name: "Magyar Napelem Kft.",
-        rating: 4.6,
-        reviews: 45,
-        verified: true
-      },
-      featured: true
-    },
-    {
-      id: 6,
-      title: "Reklámfilm drónfelvételek - autó reklám",
-      description: "Autóreklámhoz kellenek dinamikus drónfelvételek. 2 nap forgatás, Balaton környékén.",
-      budget: 95,
-      budgetType: "hourly",
-      location: "Balatonfüred",
-      category: "videography",
-      postedDate: "2026.03.01.",
-      deadline: "2026.03.18.",
-      proposals: 9,
-      skills: ["reklám", "autó", "dinamikus"],
-      client: {
-        name: "Creative Studio Budapest",
-        rating: 4.9,
-        reviews: 178,
-        verified: true
-      },
-      featured: false
-    }
   ];
 
   const filteredJobs = jobs.filter(job => {
@@ -238,111 +170,6 @@ const Landing = () => {
     { id: 'inspection', name: 'Ellenőrzés', count: 98 },
     { id: 'mapping', name: 'Térképezés', count: 76 },
     { id: 'delivery', name: 'Szállítás', count: 55 }
-  ];
-
-  const freelancers = [
-    {
-      id: 1,
-      name: "Kovács Péter",
-      title: "Profi drónpilóta - 8 év tapasztalat",
-      description: "DJI Inspire 2, Mavic 3, hőkamera. Ingatlanfotózás, ipari ellenőrzés, rendezvények.",
-      hourlyRate: 45,
-      location: "Budapest",
-      category: "photography",
-      rating: 4.9,
-      reviews: 234,
-      jobs: 187,
-      verified: true,
-      skills: ["ingatlan", "ipari", "hőkamera", "DJI"],
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      featured: true,
-      availability: "azonnal"
-    },
-    {
-      id: 2,
-      name: "Nagy Eszter",
-      title: "Kreatív drónvideós - rendezvények, esküvők",
-      description: "Kreatív megközelítés, professzionális utómunka. 5+ év tapasztalat, 300+ esemény.",
-      hourlyRate: 55,
-      location: "Győr",
-      category: "videography",
-      rating: 5.0,
-      reviews: 178,
-      jobs: 256,
-      verified: true,
-      skills: ["esküvő", "rendezvény", "kreatív", "utómunka"],
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      featured: true,
-      availability: "1 hét"
-    },
-    {
-      id: 3,
-      name: "Szabó István",
-      title: "Ipari drónspecialista - hőkamera, szerkezetvizsgálat",
-      description: "Mérnöki végzettség, ipari létesítmények ellenőrzése, részletes műszaki jelentések.",
-      hourlyRate: 65,
-      location: "Miskolc",
-      category: "inspection",
-      rating: 4.8,
-      reviews: 156,
-      jobs: 234,
-      verified: true,
-      skills: ["ipari", "hőkamera", "mérnöki", "jelentés"],
-      image: "https://randomuser.me/api/portraits/men/45.jpg",
-      featured: false,
-      availability: "3 nap"
-    },
-    {
-      id: 4,
-      name: "Tóth Gábor",
-      title: "Térképezési szakértő - NDVI, 3D modellek",
-      description: "Agrármérnöki végzettség, precíziós mezőgazdaság, NDVI elemzések, topográfiai térképek.",
-      hourlyRate: 50,
-      location: "Szeged",
-      category: "mapping",
-      rating: 4.9,
-      reviews: 98,
-      jobs: 145,
-      verified: true,
-      skills: ["NDVI", "3D", "agrár", "térkép"],
-      image: "https://randomuser.me/api/portraits/men/52.jpg",
-      featured: false,
-      availability: "azonnal"
-    },
-    {
-      id: 5,
-      name: "Varga Balázs",
-      title: "Drónos szállítás - logisztika, sürgősségi",
-      description: "Speciális szállítási engedélyek, 30kg-ig, gyógyszer- és dokumentumszállítás.",
-      hourlyRate: 40,
-      location: "Budapest",
-      category: "delivery",
-      rating: 4.7,
-      reviews: 67,
-      jobs: 189,
-      verified: true,
-      skills: ["szállítás", "logisztika", "gyors"],
-      image: "https://randomuser.me/api/portraits/men/62.jpg",
-      featured: false,
-      availability: "2 nap"
-    },
-    {
-      id: 6,
-      name: "Kiss Anna",
-      title: "Luxus ingatlanfotós - drón + földi fotózás",
-      description: "Luxusingatlanokra specializálódva, komplett fotócsomag drónnal + földi géppel.",
-      hourlyRate: 60,
-      location: "Budapest",
-      category: "photography",
-      rating: 5.0,
-      reviews: 145,
-      jobs: 312,
-      verified: true,
-      skills: ["luxus", "ingatlan", "fotózás", "utómunka"],
-      image: "https://randomuser.me/api/portraits/women/63.jpg",
-      featured: true,
-      availability: "1 hét"
-    }
   ];
 
   const filteredFreelancers = freelancers.filter(f => {

@@ -122,6 +122,29 @@ router.get('/my-projects', authMiddleware, async (req, res) => {
     }
 });
 
+// Rendszer statisztikák lekérése a Főoldalhoz
+router.get('/system-stats', async (req, res) => {
+    try {
+        const [[total_projects]] = await pool.query("SELECT COUNT(*) as count FROM projects");
+        const [[total_pilots]] = await pool.query("SELECT COUNT(*) as count FROM users WHERE role = 'driver'");
+        const [[total_completed]] = await pool.query("SELECT COUNT(*) as count FROM contracts WHERE status = 'completed'");
+        const [[total_earnings]] = await pool.query("SELECT SUM(amount) as sum FROM contracts WHERE status = 'completed'");
+
+        res.json({
+            success: true,
+            stats: {
+                jobs: total_projects.count || 0,
+                freelancers: total_pilots.count || 0,
+                completed: total_completed.count || 0,
+                earnings: total_earnings.sum || 0
+            }
+        });
+    } catch (error) {
+        console.error('❌ Statisztika lekérési hiba:', error);
+        res.status(500).json({ message: 'Szerver hiba a statisztikák lekérésekor.' });
+    }
+});
+
 // Egy adott projekt részleteinek lekérése (későbbiekben szükség lesz rá)
 router.get('/:id', async (req, res) => {
     try {
