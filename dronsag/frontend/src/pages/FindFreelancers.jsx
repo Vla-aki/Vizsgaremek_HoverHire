@@ -121,10 +121,10 @@ const FindFreelancers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-7xl">
           
           {/* Fejléc */}
@@ -177,7 +177,7 @@ const FindFreelancers = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Helyszín
+                      Település
                     </label>
                     <input
                       type="text"
@@ -189,7 +189,7 @@ const FindFreelancers = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Minimum óradíj (€)
+                      Minimum óradíj (Ft)
                     </label>
                     <input
                       type="number"
@@ -201,7 +201,7 @@ const FindFreelancers = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Maximum óradíj (€)
+                      Maximum óradíj (Ft)
                     </label>
                     <input
                       type="number"
@@ -478,6 +478,7 @@ const FindFreelancers = () => {
                             </div>
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-300 italic">"{review.comment}"</p>
+                      <p className="text-sm text-gray-500 transition-all duration-700 mt-1">Csatlakozott: {selectedFreelancer.memberSince}</p>
                         </div>
                       ))}
                     </div>

@@ -1,7 +1,7 @@
 // src/pages/customer/MyProjects.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlus, FaEye, FaEdit, FaTrash, FaFilter, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEdit, FaTrash, FaFilter, FaSearch, FaTimes, FaSave } from 'react-icons/fa';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 
@@ -11,6 +11,11 @@ const MyProjects = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [editFormData, setEditFormData] = useState({});
 
   useEffect(() => {
     const fetchMyProjects = async () => {
@@ -32,6 +37,50 @@ const MyProjects = () => {
     };
     fetchMyProjects();
   }, []);
+
+  const openProjectModal = (project, isEdit) => {
+    setSelectedProject(project);
+    setIsEditingProject(isEdit);
+    if (isEdit) {
+      setEditFormData({
+        title: project.title,
+        category: project.category,
+        description: project.description,
+        location: project.location,
+        budget_type: project.budget_type,
+        budget: project.budget,
+        deadline: new Date(project.deadline).toISOString().split('T')[0]
+      });
+    }
+  };
+
+  const submitProjectEdit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${apiUrl}/projects/${selectedProject.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(editFormData)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProjects(projects.map(p => p.id === selectedProject.id ? { ...p, ...data.project } : p));
+        setSelectedProject(null);
+      }
+    } catch (err) {}
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      await fetch(`${apiUrl}/projects/${deleteModal.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      setProjects(projects.filter(p => p.id !== deleteModal.id));
+      setDeleteModal({ show: false, id: null });
+    } catch (error) {}
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -71,10 +120,10 @@ const MyProjects = () => {
   });
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-7xl">
           
           {/* Fejléc */}
@@ -208,23 +257,24 @@ const MyProjects = () => {
                     </div>
 
                     <div className="flex items-center gap-2 lg:ml-4">
-                      <Link
-                        to={`/project/${project.id}`}
+                      <button
+                        onClick={() => openProjectModal(project, false)}
                         className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300"
                         title="Megtekintés"
                       >
                         <FaEye />
-                      </Link>
+                      </button>
                       {project.status !== 'completed' && (
                         <>
-                          <Link
-                            to={`/project/${project.id}/edit`}
+                          <button
+                            onClick={() => openProjectModal(project, true)}
                             className="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300"
                             title="Szerkesztés"
                           >
                             <FaEdit />
-                          </Link>
+                          </button>
                           <button
+                            onClick={() => setDeleteModal({ show: true, id: project.id })}
                             className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300"
                             title="Törlés"
                           >
@@ -266,6 +316,103 @@ const MyProjects = () => {
       </div>
 
       <Footer />
+
+      {/* Törlés megerősítő ablak */}
+      {deleteModal.show && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full shadow-2xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Biztosan törlöd a projektet?</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">Ezzel a művelettel a projekthez tartozó összes ajánlat is véglegesen törlődik az adatbázisból!</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setDeleteModal({ show: false, id: null })} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">Mégse</button>
+              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">Igen, törlöm</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Megtekintés / Szerkesztés Modal */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{isEditingProject ? 'Projekt szerkesztése' : 'Projekt részletei'}</h2>
+              <button onClick={() => setSelectedProject(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><FaTimes size={20}/></button>
+            </div>
+            
+            <div className="p-6">
+              {!isEditingProject ? (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400">{selectedProject.title}</h3>
+                    {getStatusBadge(selectedProject.status)}
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{selectedProject.description}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Költségkeret</p>
+                      <p className="font-bold text-gray-900 dark:text-white">{parseInt(selectedProject.budget).toLocaleString('hu-HU')} Ft / {selectedProject.budget_type === 'fix' ? 'fix' : 'óra'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Határidő</p>
+                      <p className="font-bold text-gray-900 dark:text-white">{formatDate(selectedProject.deadline)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Helyszín</p>
+                      <p className="font-bold text-gray-900 dark:text-white">{selectedProject.location}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Ajánlatok száma</p>
+                      <p className="font-bold text-gray-900 dark:text-white">{selectedProject.proposals_count} db</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <button onClick={() => setSelectedProject(null)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 font-medium">Bezárás</button>
+                    {selectedProject.status !== 'completed' && (
+                      <button onClick={() => setIsEditingProject(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2"><FaEdit/> Szerkesztés</button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={submitProjectEdit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Projekt címe</label>
+                    <input type="text" name="title" value={editFormData.title} onChange={(e) => setEditFormData({...editFormData, title: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg dark:text-white" required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Leírás</label>
+                    <textarea name="description" value={editFormData.description} onChange={(e) => setEditFormData({...editFormData, description: e.target.value})} rows="4" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg dark:text-white resize-none" required></textarea>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Helyszín</label>
+                      <input type="text" name="location" value={editFormData.location} onChange={(e) => setEditFormData({...editFormData, location: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg dark:text-white" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Határidő</label>
+                      <input type="date" name="deadline" value={editFormData.deadline} onChange={(e) => setEditFormData({...editFormData, deadline: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg dark:text-white" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Díjazás típusa</label>
+                      <select name="budget_type" value={editFormData.budget_type} onChange={(e) => setEditFormData({...editFormData, budget_type: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg dark:text-white">
+                        <option value="fix">Fix összeg</option><option value="hourly">Óradíj</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Költségkeret (Ft)</label>
+                      <input type="number" name="budget" value={editFormData.budget} onChange={(e) => setEditFormData({...editFormData, budget: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg dark:text-white" required />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <button type="button" onClick={() => setIsEditingProject(false)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 font-medium">Mégse</button>
+                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2"><FaSave/> Mentés</button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

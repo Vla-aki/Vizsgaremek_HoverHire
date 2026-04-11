@@ -11,11 +11,6 @@
     overflow-x: hidden;
   }
 
-  /* Minden létező elemre (árnyékok, keretek, ikonok is) ható, lassú, 1 másodperces átmenet */
-  *, ::before, ::after {
-    transition: all 1s ease-in-out;
-  }
-  
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;

@@ -1,16 +1,38 @@
 // src/pages/About.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUsers, FaRocket, FaHandshake, FaShieldAlt, FaStar, FaCheckCircle, FaAward, FaHeart } from 'react-icons/fa';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 
 const About = () => {
+  const [systemStats, setSystemStats] = useState({ freelancers: 0, completed: 0, earnings: 0 });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const res = await fetch(`${apiUrl}/projects/system-stats`);
+        const data = await res.json();
+        if (data.success && data.stats) {
+          setSystemStats({
+            freelancers: data.stats.freelancers || 0,
+            completed: data.stats.completed || 0,
+            earnings: data.stats.earnings || 0
+          });
+        }
+      } catch (error) {
+        console.error("Hiba a statisztikák lekérésekor:", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const stats = [
-    { value: '2016', label: 'Alapítás éve' },
-    { value: '500+', label: 'Ellenőrzött pilóta' },
-    { value: '1200+', label: 'Sikeres projekt' },
-    { value: '98%', label: 'Ügyfél elégedettség' }
+    { value: '2024', label: 'Alapítás éve' },
+    { value: `${systemStats.freelancers}+`, label: 'Ellenőrzött pilóta' },
+    { value: `${systemStats.completed}+`, label: 'Sikeres projekt' },
+    { value: `${systemStats.earnings.toLocaleString()} Ft`, label: 'Kifizetett összeg' }
   ];
 
   const values = [
@@ -38,36 +60,20 @@ const About = () => {
 
   const team = [
     {
-      name: 'Kovács Péter',
+      name: 'Csák Roland',
       role: 'Alapító - CEO',
-      image: 'https://randomuser.me/api/portraits/men/32.jpg',
-      bio: 'Korábbi drónpilóta és projektmenedzser. 10+ év tapasztalat a dróniparban és az online piacterek fejlesztésében.',
+      image: 'https://ui-avatars.com/api/?name=Csák+Roland&background=2563eb&color=fff&size=256',
+      bio: 'A platform megálmodója és vezető fejlesztője. Évek óta szenvedélye a dróntechnológia és a szoftverfejlesztés.',
       linkedin: '#',
-      email: 'peter.kovacs@hoverhire.hu'
+      email: 'roland@hoverhire.hu'
     },
     {
-      name: 'Nagy Eszter',
-      role: 'Műszaki igazgató',
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      bio: 'Mérnöki végzettségű szakértő, 8 éve foglalkozik drónokkal és légi felvételezéssel. Felelős a technikai minőségbiztosításért.',
+      name: 'Szalai Bence',
+      role: 'Társalapító - CTO',
+      image: 'https://ui-avatars.com/api/?name=Szalai+Bence&background=2563eb&color=fff&size=256',
+      bio: 'A technikai architektúra és az infrastruktúra felelőse. Szakértelme garantálja a platform stabil és biztonságos működését.',
       linkedin: '#',
-      email: 'eszter.nagy@hoverhire.hu'
-    },
-    {
-      name: 'Szabó István',
-      role: 'Ügyfélszolgálati vezető',
-      image: 'https://randomuser.me/api/portraits/men/45.jpg',
-      bio: 'Korábban nemzetközi ügyfélszolgálati csapatokat vezetett. Célja, hogy minden felhasználónk elégedett legyen.',
-      linkedin: '#',
-      email: 'istvan.szabo@hoverhire.hu'
-    },
-    {
-      name: 'Kiss Anna',
-      role: 'Közösségi menedzser',
-      image: 'https://randomuser.me/api/portraits/women/63.jpg',
-      bio: 'Felelős a pilóták és megbízók közötti kapcsolattartásért, közösségépítésért és a rendezvények szervezéséért.',
-      linkedin: '#',
-      email: 'anna.kiss@hoverhire.hu'
+      email: 'bence@hoverhire.hu'
     }
   ];
 
@@ -100,10 +106,10 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16">
+      <div className="pt-24 pb-16 flex-1">
         {/* Hero */}
         <section className="bg-gradient-to-r from-blue-600 to-blue-800 py-20 px-4 text-white transition-all duration-700">
           <div className="container mx-auto max-w-7xl text-center">
@@ -111,7 +117,7 @@ const About = () => {
               Rólunk
             </h1>
             <p className="text-xl max-w-3xl mx-auto opacity-90 transition-all duration-700">
-              2016 óta segítjük összekapcsolni a megbízókat a profi drónpilótákkal.
+              Célunk, hogy segítsük összekapcsolni a megbízókat a profi drónpilótákkal.
               Magyarország legnagyobb és legmegbízhatóbb drónos piactere.
             </p>
           </div>
@@ -259,7 +265,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
               {team.map((member, index) => (
                 <div key={index} className="text-center group transition-all duration-700">
                   <div className="relative mb-4 overflow-hidden rounded-lg transition-all duration-700">
@@ -306,7 +312,7 @@ const About = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/register"
-                className="px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-all duration-300 font-medium shadow-lg"
+                className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300 font-medium shadow-lg"
               >
                 Regisztráció
               </Link>

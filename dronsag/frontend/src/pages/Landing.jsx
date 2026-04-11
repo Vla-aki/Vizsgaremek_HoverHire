@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
+import { useAuth } from '../contexts/AuthContext';
 
 const Landing = () => {
   // Állapotok
   const [scrollY, setScrollY] = useState(0);
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState('hero');
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
@@ -13,13 +15,17 @@ const Landing = () => {
   const [selectedFreelancer, setSelectedFreelancer] = useState(null);
   const [showJobModal, setShowJobModal] = useState(false);
   const [showFreelancerModal, setShowFreelancerModal] = useState(false);
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedJobCategory, setSelectedJobCategory] = useState('all');
+  const [selectedFreelancerCategory, setSelectedFreelancerCategory] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [stats, setStats] = useState({ jobs: 0, freelancers: 0, completed: 0, earnings: 0 });
   const [jobs, setJobs] = useState([]);
   const [freelancers, setFreelancers] = useState([]);
-  const [targetStats, setTargetStats] = useState({ jobs: 1247, freelancers: 528, completed: 9876, earnings: 2450000 });
+  const [targetStats, setTargetStats] = useState({ jobs: 0, freelancers: 0, completed: 0, earnings: 0 });
+  const [categoryCounts, setCategoryCounts] = useState({ all: 0, photography: 0, videography: 0, inspection: 0, mapping: 0, delivery: 0 });
+  const [freelancerTotal, setFreelancerTotal] = useState(0);
 
   // Referenciák
   const heroRef = useRef(null);
@@ -95,10 +101,10 @@ const Landing = () => {
         const statsData = await statsRes.json();
         if (statsData.success && statsData.stats) {
           setTargetStats({
-            jobs: statsData.stats.jobs || 1247,
-            freelancers: statsData.stats.freelancers || 528,
-            completed: statsData.stats.completed || 1200,
-            earnings: statsData.stats.earnings || 2450000
+            jobs: statsData.stats.jobs || 0,
+            freelancers: statsData.stats.freelancers || 0,
+            completed: statsData.stats.completed || 0,
+            earnings: statsData.stats.earnings || 0
           });
         }
 
@@ -106,6 +112,13 @@ const Landing = () => {
         const projRes = await fetch(`${apiUrl}/projects`);
         const projData = await projRes.json();
         if (projData.success) {
+          // Dinamikus kategória számláló beállítása
+          const counts = { all: projData.projects.length, photography: 0, videography: 0, inspection: 0, mapping: 0, delivery: 0 };
+          projData.projects.forEach(p => {
+            if (counts[p.category] !== undefined) counts[p.category]++;
+          });
+          setCategoryCounts(counts);
+
           const formattedJobs = projData.projects.map(p => ({
             id: p.id,
             title: p.title,
@@ -133,6 +146,7 @@ const Landing = () => {
         const pilotRes = await fetch(`${apiUrl}/auth/pilots`);
         const pilotData = await pilotRes.json();
         if (pilotData.success) {
+          setFreelancerTotal(pilotData.pilots.length);
           setFreelancers(pilotData.pilots.slice(0, 6)); // Csak a top 6 pilóta
         }
       } catch (error) {
@@ -144,15 +158,16 @@ const Landing = () => {
 
   // Munkák adatai
   const jobCategories = [
-    { id: 'all', name: 'Összes', count: 1247 },
-    { id: 'photography', name: 'Légifotó', count: 432 },
-    { id: 'videography', name: 'Videózás', count: 356 },
-    { id: 'inspection', name: 'Ellenőrzés', count: 289 },
-    { id: 'mapping', name: 'Térképezés', count: 178 },
-    { id: 'delivery', name: 'Szállítás', count: 92 }
+    { id: 'all', name: 'Összes', count: categoryCounts.all },
+    { id: 'photography', name: 'Légifotó', count: categoryCounts.photography },
+    { id: 'videography', name: 'Videózás', count: categoryCounts.videography },
+    { id: 'inspection', name: 'Ellenőrzés', count: categoryCounts.inspection },
+    { id: 'mapping', name: 'Térképezés', count: categoryCounts.mapping },
+    { id: 'delivery', name: 'Szállítás', count: categoryCounts.delivery }
   ];
 
   const filteredJobs = jobs.filter(job => {
+    if (selectedJobCategory !== 'all' && job.category !== selectedJobCategory) return false;
     if (searchQuery && !job.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
         !job.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (selectedLocation && !job.location.includes(selectedLocation)) return false;
@@ -162,20 +177,33 @@ const Landing = () => {
 
   // Pilóták adatai
   const freelancerCategories = [
-    { id: 'all', name: 'Összes', count: 528 },
-    { id: 'photography', name: 'Fotós', count: 156 },
-    { id: 'videography', name: 'Videós', count: 143 },
-    { id: 'inspection', name: 'Ellenőrzés', count: 98 },
-    { id: 'mapping', name: 'Térképezés', count: 76 },
-    { id: 'delivery', name: 'Szállítás', count: 55 }
+    { id: 'all', name: 'Összes', count: freelancerTotal },
+    { id: 'photography', name: 'Fotós' },
+    { id: 'videography', name: 'Videós' },
+    { id: 'inspection', name: 'Ellenőrzés' },
+    { id: 'mapping', name: 'Térképezés' },
+    { id: 'delivery', name: 'Szállítás' }
   ];
 
   const filteredFreelancers = freelancers.filter(f => {
+    if (selectedFreelancerCategory !== 'all') {
+      const catMap = {
+        photography: ['fotó', 'légifotó'],
+        videography: ['videó'],
+        inspection: ['ellenőr', 'ipari', 'hőkamera'],
+        mapping: ['térkép', 'földmér', '3d'],
+        delivery: ['szállít', 'mezőgazdaság']
+      };
+      const keywords = catMap[selectedFreelancerCategory] || [];
+      const hasSkill = f.skills.some(s => keywords.some(kw => s.toLowerCase().includes(kw)));
+      if (!hasSkill) return false;
+    }
     if (searchQuery && !f.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
         !f.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
         !f.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (selectedLocation && !f.location.includes(selectedLocation)) return false;
-    if (f.hourlyRate < priceRange.min || f.hourlyRate > priceRange.max) return false;
+    const rate = f.hourlyRate || 0;
+    if (rate < priceRange.min || rate > priceRange.max) return false;
     return true;
   });
 
@@ -240,7 +268,7 @@ const Landing = () => {
                   />
                   <button 
                     onClick={() => navigate(`/find-work?q=${encodeURIComponent(searchQuery)}`)} 
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 whitespace-nowrap">
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-700 whitespace-nowrap">
                     Keresés
                   </button>
                 </div>
@@ -296,7 +324,7 @@ const Landing = () => {
               <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 transition-all duration-700">Sikeres projekt</div>
             </div>
             <div className="transition-all duration-700">
-              <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2 transition-all duration-700">{stats.earnings.toLocaleString()} €</div>
+              <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2 transition-all duration-700">{stats.earnings.toLocaleString()} Ft</div>
               <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 transition-all duration-700">Kifizetett összeg</div>
             </div>
           </div>
@@ -311,7 +339,7 @@ const Landing = () => {
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-all duration-700">Aktuális projektek</h2>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-all duration-700">Tallózz a legfrissebb munkák között</p>
             </div>
-            <Link to="/find-work" className="text-blue-600 dark:text-blue-400 hover:underline transition-all duration-300 text-sm sm:text-base">
+            <Link to="/find-work" className="text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-700 text-sm sm:text-base">
               Összes projekt megtekintése →
             </Link>
           </div>
@@ -320,18 +348,18 @@ const Landing = () => {
           <div className="flex flex-wrap gap-2 mb-8">
             <div className="flex flex-wrap gap-2 w-full md:w-auto">
               {jobCategories.map((cat) => (
-                <Link
+                <button
                   key={cat.id}
-                  to={`/find-work?category=${cat.id}`}
-                  className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-600 hover:text-white"
+                  onClick={() => setSelectedJobCategory(cat.id)}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-700 ${selectedJobCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-600 hover:text-white'}`}
                 >
                   {cat.name} <span className="text-xs opacity-75">({cat.count})</span>
-                </Link>
+                </button>
               ))}
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="px-3 sm:px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 text-xs sm:text-sm"
+              className="px-3 sm:px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-700 text-xs sm:text-sm"
             >
               <span className="hidden sm:inline">Szűrők</span>
               <span className="sm:hidden">Szűrők</span>
@@ -367,7 +395,7 @@ const Landing = () => {
                     value={priceRange.min}
                     onChange={(e) => setPriceRange({...priceRange, min: parseInt(e.target.value) || 0})}
                     className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white transition-all duration-700"
-                    placeholder="0 €"
+                    placeholder="0 Ft"
                   />
                 </div>
                 <div>
@@ -379,16 +407,16 @@ const Landing = () => {
                     value={priceRange.max}
                     onChange={(e) => setPriceRange({...priceRange, max: parseInt(e.target.value) || 1000})}
                     className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white transition-all duration-700"
-                    placeholder="1000 €"
+                    placeholder="100000 Ft"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
                     onClick={() => {
                       setSelectedLocation('');
-                      setPriceRange({ min: 0, max: 1000 });
+                      setPriceRange({ min: 0, max: 100000 });
                     }}
-                    className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300"
+                    className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-700"
                   >
                     Szűrők törlése
                   </button>
@@ -402,7 +430,7 @@ const Landing = () => {
             {filteredJobs.map((job) => (
               <div
                 key={job.id}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-all duration-300 cursor-pointer group relative overflow-hidden"
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-colors duration-700 cursor-pointer group relative overflow-hidden"
                 onClick={() => {
                   setSelectedJob(job);
                   setShowJobModal(true);
@@ -415,7 +443,7 @@ const Landing = () => {
                 )}
                 <div className="p-6 pt-8">
                   <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300 pr-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-700 pr-4">
                       {job.title}
                     </h3>
                     <span className="text-xs text-gray-500 dark:text-gray-400 transition-all duration-700 whitespace-nowrap">{job.postedDate}</span>
@@ -427,7 +455,7 @@ const Landing = () => {
 
                   <div className="flex items-center gap-4 mb-4">
                     <div className="flex items-center gap-1">
-                      <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white transition-all duration-700">{job.budget} €</span>
+                      <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white transition-all duration-700">{job.budget} Ft</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400 transition-all duration-700">/{job.budgetType === 'fix' ? 'fix' : 'óra'}</span>
                     </div>
                     <span className="text-xs text-gray-500 dark:text-gray-400 transition-all duration-700">{job.location}</span>
@@ -460,7 +488,7 @@ const Landing = () => {
           <div className="text-center mt-12">
             <Link
               to="/find-work"
-              className="inline-block px-5 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 text-sm sm:text-base"
+              className="inline-block px-5 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-700 text-sm sm:text-base"
             >
               Összes projekt megtekintése
             </Link>
@@ -476,7 +504,7 @@ const Landing = () => {
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-all duration-700">Legjobb pilótáink</h2>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-all duration-700">Ellenőrzött szakemberek, profi felszereléssel</p>
             </div>
-            <Link to="/find-freelancers" className="text-blue-600 dark:text-blue-400 hover:underline transition-all duration-300 text-sm sm:text-base">
+            <Link to="/find-freelancers" className="text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-700 text-sm sm:text-base">
               Összes pilóta megtekintése →
             </Link>
           </div>
@@ -484,13 +512,13 @@ const Landing = () => {
           {/* Kategória szűrő */}
           <div className="flex flex-wrap gap-2 mb-8">
             {freelancerCategories.map((cat) => (
-              <Link
+              <button
                 key={cat.id}
-                to={`/find-freelancers?category=${cat.id}`}
-                className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-600 hover:text-white"
+                onClick={() => setSelectedFreelancerCategory(cat.id)}
+                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-700 ${selectedFreelancerCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-600 hover:text-white'}`}
               >
-                {cat.name} <span className="text-xs opacity-75">({cat.count})</span>
-              </Link>
+                {cat.name} {cat.count !== undefined && <span className="text-xs opacity-75">({cat.count})</span>}
+              </button>
             ))}
           </div>
 
@@ -499,7 +527,7 @@ const Landing = () => {
             {filteredFreelancers.map((f) => (
               <div
                 key={f.id}
-                className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-colors duration-700 cursor-pointer group"
                 onClick={() => {
                   setSelectedFreelancer(f);
                   setShowFreelancerModal(true);
@@ -510,7 +538,7 @@ const Landing = () => {
                     <img src={f.image} alt={f.name} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-gray-200 dark:border-gray-600 transition-all duration-700" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-700">
                           {f.name}
                         </h3>
                         {f.verified && (
@@ -535,7 +563,7 @@ const Landing = () => {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white transition-all duration-700">{f.hourlyRate} €</span>
+                      <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white transition-all duration-700">{f.hourlyRate} Ft</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400 transition-all duration-700">/óra</span>
                     </div>
                     <div className="flex items-center gap-1">
@@ -591,14 +619,25 @@ const Landing = () => {
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto transition-all duration-700">
             Csatlakozz Magyarország legnagyobb drónos közösségéhez. Ingyenes regisztráció, ellenőrzött pilóták, biztonságos fizetés.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
-              Projektet hirdetek
-            </Link>
-            <Link to="/register?type=driver" className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300 font-medium">
-              Pilóta leszek
-            </Link>
-          </div>
+          {user ? (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to={user.role === 'driver' ? '/drone-dashboard' : '/dashboard'} className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-700 font-medium shadow-lg hover:shadow-xl">
+                Ugrás a vezérlőpultra
+              </Link>
+              <Link to={user.role === 'driver' ? '/find-work' : '/find-freelancers'} className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-700 font-medium">
+                {user.role === 'driver' ? 'Projektek böngészése' : 'Pilóták böngészése'}
+              </Link>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/register" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-700 font-medium shadow-lg hover:shadow-xl">
+                Projektet hirdetek
+              </Link>
+              <Link to="/register?role=driver" className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-700 font-medium">
+                Pilóta leszek
+              </Link>
+            </div>
+          )}
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-8 text-xs sm:text-sm text-gray-500 dark:text-gray-400 transition-all duration-700">
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full transition-all duration-700"></span>
@@ -628,7 +667,7 @@ const Landing = () => {
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-700">{selectedJob.title}</h2>
                 <button
                   onClick={() => setShowJobModal(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-all duration-300 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-700 text-2xl"
                 >
                   ✕
                 </button>
@@ -665,7 +704,7 @@ const Landing = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h3 className="font-semibold mb-2 transition-all duration-700">Költségkeret</h3>
-                    <p className="text-2xl font-bold text-blue-600 transition-all duration-700">{selectedJob.budget} € / {selectedJob.budgetType === 'fix' ? 'fix' : 'óra'}</p>
+                    <p className="text-2xl font-bold text-blue-600 transition-all duration-700">{selectedJob.budget} Ft / {selectedJob.budgetType === 'fix' ? 'fix' : 'óra'}</p>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 transition-all duration-700">Jelentkezési határidő</h3>
@@ -686,7 +725,7 @@ const Landing = () => {
                     </div>
                     <Link
                       to="/find-work"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 text-center"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-700 text-center"
                     >
                       Részletek és jelentkezés
                     </Link>
@@ -707,7 +746,7 @@ const Landing = () => {
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white transition-all duration-700">{selectedFreelancer.name}</h2>
                 <button
                   onClick={() => setShowFreelancerModal(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-all duration-300 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-700 text-2xl"
                 >
                   ✕
                 </button>
@@ -748,7 +787,7 @@ const Landing = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h3 className="font-semibold mb-2 transition-all duration-700">Óradíj</h3>
-                    <p className="text-2xl font-bold text-blue-600 transition-all duration-700">{selectedFreelancer.hourlyRate} € / óra</p>
+                    <p className="text-2xl font-bold text-blue-600 transition-all duration-700">{selectedFreelancer.hourlyRate} Ft / óra</p>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 transition-all duration-700">Elérhetőség</h3>
@@ -760,10 +799,11 @@ const Landing = () => {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                       <p className="text-sm text-gray-500 transition-all duration-700">Helyszín: {selectedFreelancer.location}</p>
+                      <p className="text-sm text-gray-500 transition-all duration-700 mt-1">Csatlakozott: {selectedFreelancer.memberSince}</p>
                     </div>
                     <Link
                       to="/find-freelancers"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 text-center"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-700 text-center"
                     >
                       Teljes profil megtekintése
                     </Link>

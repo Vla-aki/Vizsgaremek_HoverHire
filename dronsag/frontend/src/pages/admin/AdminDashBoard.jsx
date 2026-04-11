@@ -8,6 +8,7 @@ const AdminDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, type: '', id: null });
 
   const fetchData = async () => {
     setLoading(true);
@@ -35,25 +36,18 @@ const AdminDashboard = () => {
     fetchData();
   }, [activeTab]);
 
-  const handleDeleteProject = async (id) => {
-    if (!window.confirm('Biztosan törölni akarod ezt a projektet? Ez a művelet visszavonhatatlan!')) return;
+  const confirmDeletion = async () => {
     try {
       const token = localStorage.getItem('token');
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      await fetch(`${apiUrl}/admin/projects/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      
+      if (deleteConfirm.type === 'project') {
+        await fetch(`${apiUrl}/admin/projects/${deleteConfirm.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      } else if (deleteConfirm.type === 'user') {
+        await fetch(`${apiUrl}/admin/users/${deleteConfirm.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      }
       fetchData(); 
-    } catch (error) {
-      alert('Hiba történt a törlés során.');
-    }
-  };
-
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm('Biztosan törölni akarod ezt a felhasználót? Minden adata (projektek, ajánlatok, portfólió) TÖRLŐDIK!')) return;
-    try {
-      const token = localStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      await fetch(`${apiUrl}/admin/users/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-      fetchData(); 
+      setDeleteConfirm({ show: false, type: '', id: null });
     } catch (error) {
       alert('Hiba történt a törlés során.');
     }
@@ -149,6 +143,24 @@ const AdminDashboard = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Törlés megerősítő ablak */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full shadow-2xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Biztosan törölni akarod?</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {deleteConfirm.type === 'project' 
+                ? 'A projekt és az összes hozzá tartozó ajánlat véglegesen törlődik a rendszerből!' 
+                : 'A felhasználó és minden adata (projektek, ajánlatok, portfólió) véglegesen törlődik a rendszerből!'}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setDeleteConfirm({ show: false, type: '', id: null })} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">Mégse</button>
+              <button onClick={confirmDeletion} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">Igen, törlés</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -86,10 +86,10 @@ const Earnings = () => {
   });
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-7xl">
           
           {/* Fejléc */}
@@ -109,7 +109,7 @@ const Earnings = () => {
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Összes bevétel</h3>
                 <FaEuroSign className="text-blue-600 dark:text-blue-400 text-xl" />
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.total} €</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.total} Ft</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">+12% az előző hónaphoz</p>
             </div>
 
@@ -118,7 +118,7 @@ const Earnings = () => {
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Függőben lévő</h3>
                 <FaClock className="text-yellow-600 dark:text-yellow-400 text-xl" />
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.pending} €</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.pending} Ft</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">3 kifizetésre vár</p>
             </div>
 
@@ -127,7 +127,7 @@ const Earnings = () => {
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Kifizetve</h3>
                 <FaCheckCircle className="text-green-600 dark:text-green-400 text-xl" />
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.paid} €</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.paid} Ft</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">5 sikeres kifizetés</p>
             </div>
 
@@ -136,7 +136,7 @@ const Earnings = () => {
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Ebben a hónapban</h3>
                 <FaChartLine className="text-purple-600 dark:text-purple-400 text-xl" />
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.thisMonth} €</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{earnings.thisMonth} Ft</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">+13.7% az előző hónaphoz</p>
             </div>
           </div>
@@ -158,7 +158,7 @@ const Earnings = () => {
                     style={{ height: `${(data.amount / 4000) * 200}px` }}
                   ></div>
                   <span className="text-sm text-gray-600 dark:text-gray-400">{data.month}</span>
-                  <span className="text-xs font-medium text-gray-900 dark:text-white">{data.amount} €</span>
+                  <span className="text-xs font-medium text-gray-900 dark:text-white">{data.amount} Ft</span>
                 </div>
               ))}
             </div>
@@ -217,7 +217,7 @@ const Earnings = () => {
                   </div>
                   <div className="flex items-center justify-between sm:justify-end gap-6">
                     <div className="text-right">
-                      <p className="font-bold text-lg text-gray-900 dark:text-white">{transaction.amount} €</p>
+                      <p className="font-bold text-lg text-gray-900 dark:text-white">{transaction.amount} Ft</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{transaction.date}</p>
                     </div>
                     <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
@@ -233,7 +233,7 @@ const Earnings = () => {
               <div className="flex justify-between items-center">
                 <span className="font-medium text-gray-900 dark:text-white">Összesen:</span>
                 <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {filteredTransactions.reduce((sum, t) => sum + t.amount, 0)} €
+                  {filteredTransactions.reduce((sum, t) => sum + t.amount, 0)} Ft
                 </span>
               </div>
             </div>

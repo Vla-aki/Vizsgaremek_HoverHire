@@ -170,10 +170,10 @@ const CreateProject = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-4xl">
           
           {/* Vissza gomb */}
@@ -355,7 +355,7 @@ const CreateProject = () => {
 
                     <div>
                       <label htmlFor="budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {formData.budgetType === 'fix' ? 'Összeg (€)' : 'Óradíj (€/óra)'} <span className="text-red-500">*</span>
+                        {formData.budgetType === 'fix' ? 'Összeg (Ft)' : 'Óradíj (Ft/óra)'} <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
@@ -509,7 +509,7 @@ const CreateProject = () => {
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600 dark:text-gray-400">Költségkeret:</span>
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {formData.budget} € {formData.budgetType === 'fix' ? '(fix)' : '/óra'}
+                          {formData.budget} Ft {formData.budgetType === 'fix' ? '(fix)' : '/óra'}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">

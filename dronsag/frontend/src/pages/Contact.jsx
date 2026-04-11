@@ -134,10 +134,10 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16">
+      <div className="pt-24 pb-16 flex-1">
         {/* Hero szekció - sima kocka, hullám nélkül */}
         <section className="bg-gradient-to-r from-blue-600 to-blue-800 py-20 px-4 text-white transition-all duration-700">
           <div className="container mx-auto max-w-7xl text-center">

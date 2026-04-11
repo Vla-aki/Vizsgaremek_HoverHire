@@ -75,13 +75,17 @@ const Navbar = () => {
   }, [user]);
 
   const toggleDarkMode = () => {
-    if (document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
+    const isCurrentlyDark = document.documentElement.classList.contains('dark');
+    const nextTheme = isCurrentlyDark ? 'light' : 'dark';
+
+    if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
+    setIsDark(nextTheme === 'dark');
   };
 
   return (
@@ -109,13 +113,19 @@ const Navbar = () => {
             
             {user?.role === 'customer' && (
               <>
-                <Link to="/find-freelancers" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Pilóták keresése</Link>
+                <Link to="/my-projects" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Saját munkáim</Link>
+                <Link to="/find-work" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Munkák keresése</Link>
+                <Link to="/find-freelancers" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Pilóták</Link>
                 <Link to="/create-project" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Új munka meghirdetése</Link>
               </>
             )}
 
             {user?.role === 'driver' && (
-              <Link to="/available-projects" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Munkák keresése</Link>
+              <>
+                <Link to="/my-bids" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Ajánlataim</Link>
+                <Link to="/find-work" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Munkák keresése</Link>
+                <Link to="/find-freelancers" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Pilóták</Link>
+              </>
             )}
 
             <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">Rólunk</Link>
@@ -248,12 +258,18 @@ const Navbar = () => {
               )}
               {user?.role === 'customer' && (
                 <>
-                  <Link to="/find-freelancers" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Pilóták keresése</Link>
+                  <Link to="/my-projects" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Saját munkáim</Link>
+                  <Link to="/find-work" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Munkák keresése</Link>
+                  <Link to="/find-freelancers" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Pilóták</Link>
                   <Link to="/create-project" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Új munka meghirdetése</Link>
                 </>
               )}
               {user?.role === 'driver' && (
-                <Link to="/available-projects" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Munkák keresése</Link>
+                <>
+                  <Link to="/my-bids" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Ajánlataim</Link>
+                  <Link to="/find-work" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Munkák keresése</Link>
+                  <Link to="/find-freelancers" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">Pilóták</Link>
+                </>
               )}
               <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
                 Rólunk
