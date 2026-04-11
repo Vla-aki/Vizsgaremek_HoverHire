@@ -95,10 +95,10 @@ const MyContracts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-7xl">
           
           {/* Fejléc */}
@@ -130,7 +130,7 @@ const MyContracts = () => {
               <p className="text-xs text-gray-500 dark:text-gray-400">Befejezve</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 text-center">
-              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.totalEarnings} €</p>
+              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.totalEarnings} Ft</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Összes bevétel</p>
             </div>
           </div>
@@ -143,7 +143,7 @@ const MyContracts = () => {
                   <FaEuroSign className="text-yellow-600 dark:text-yellow-400 text-xl" />
                   <div>
                     <p className="font-medium text-yellow-800 dark:text-yellow-200">Függőben lévő kifizetések</p>
-                    <p className="text-sm text-yellow-600 dark:text-yellow-400">{stats.pendingPayment} € összegben</p>
+                    <p className="text-sm text-yellow-600 dark:text-yellow-400">{stats.pendingPayment} Ft összegben</p>
                   </div>
                 </div>
                 <Link to="/earnings" className="text-yellow-600 dark:text-yellow-400 hover:underline text-sm">
@@ -233,7 +233,7 @@ const MyContracts = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{contract.amount} €</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{contract.amount} Ft</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">Szerződéses összeg</p>
                       </div>
                       <div className="flex gap-2">
@@ -332,7 +332,7 @@ const MyContracts = () => {
               <FaFileContract className="mx-auto text-4xl text-gray-400 mb-4" />
               <p className="text-gray-500 dark:text-gray-400 mb-4">Még nincs szerződés ebben a kategóriában.</p>
               <Link
-                to="/available-projects"
+                to="/find-work"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
                 Keress új projekteket →

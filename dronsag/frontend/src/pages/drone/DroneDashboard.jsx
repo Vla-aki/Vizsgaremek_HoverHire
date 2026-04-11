@@ -1,7 +1,7 @@
 // src/pages/drone/DroneDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch, FaClipboardList, FaCheckCircle, FaMoneyBillWave, FaStar, FaUserCircle } from 'react-icons/fa';
+import { FaSearch, FaClipboardList, FaCheckCircle, FaMoneyBillWave, FaStar, FaUserCircle, FaTimes, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 import { useAuth } from '../../contexts/AuthContext';
@@ -18,6 +18,8 @@ const DroneDashboard = () => {
 
   const [recommendedProjects, setRecommendedProjects] = useState([]);
   const [activeBids, setActiveBids] = useState([]);
+  const [viewProject, setViewProject] = useState(null);
+  const [loadingProject, setLoadingProject] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -73,6 +75,22 @@ const DroneDashboard = () => {
     if (user) fetchDashboardData();
   }, [user]);
 
+  const handleViewProject = async (projectId) => {
+    setLoadingProject(true);
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${apiUrl}/projects/${projectId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setViewProject(data.project);
+      }
+    } catch (err) { }
+    setLoadingProject(false);
+  };
+
   const getBidStatusBadge = (status) => {
     switch(status) {
       case 'pending':
@@ -87,10 +105,10 @@ const DroneDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-7xl">
           
           {/* Üdvözlet */}
@@ -104,7 +122,7 @@ const DroneDashboard = () => {
               </p>
             </div>
             <Link
-              to="/available-projects"
+              to="/find-work"
               className="mt-4 sm:mt-0 inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
             >
               <FaSearch className="mr-2" />
@@ -146,7 +164,7 @@ const DroneDashboard = () => {
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Összes bevétel</h3>
                 <FaMoneyBillWave className="text-purple-600 dark:text-purple-400 text-xl" />
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalEarnings} €</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalEarnings} Ft</p>
               <div className="flex items-center gap-1 mt-2">
                 <FaStar className="text-yellow-400" />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">{stats.rating}</span>
@@ -161,7 +179,7 @@ const DroneDashboard = () => {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-700">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white">Neked ajánlott projektek</h2>
-                  <Link to="/available-projects" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                  <Link to="/find-work" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
                     Összes megtekintése →
                   </Link>
                 </div>
@@ -178,7 +196,7 @@ const DroneDashboard = () => {
                             </span>
                           </div>
                           <div className="flex flex-wrap items-center gap-3 text-sm">
-                            <span className="text-gray-900 dark:text-white font-medium">{project.budget} € / {project.budgetType === 'fix' ? 'fix' : 'óra'}</span>
+                            <span className="text-gray-900 dark:text-white font-medium">{project.budget} Ft / {project.budgetType === 'fix' ? 'fix' : 'óra'}</span>
                             <span className="text-gray-500 dark:text-gray-400">{project.location}</span>
                             <span className="text-gray-500 dark:text-gray-400">Határidő: {project.deadline}</span>
                           </div>
@@ -190,12 +208,13 @@ const DroneDashboard = () => {
                             ))}
                           </div>
                         </div>
-                        <Link
-                          to={`/project/${project.id}`}
+                      <button
+                        onClick={() => handleViewProject(project.id)}
+                        disabled={loadingProject}
                           className="px-4 py-2 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300 text-center whitespace-nowrap"
                         >
                           Részletek
-                        </Link>
+                      </button>
                       </div>
                     </div>
                   ))}
@@ -220,7 +239,7 @@ const DroneDashboard = () => {
                         {getBidStatusBadge(bid.status)}
                       </div>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500 dark:text-gray-400">Ajánlat: {bid.amount} €</span>
+                        <span className="text-gray-500 dark:text-gray-400">Ajánlat: {bid.amount} Ft</span>
                         <span className="text-gray-500 dark:text-gray-400">{bid.submittedDate}</span>
                       </div>
                     </div>

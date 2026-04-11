@@ -87,10 +87,10 @@ const CustomerDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-all duration-700 flex flex-col">
       <Navbar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-16 px-4 flex-1">
         <div className="container mx-auto max-w-7xl">
           
           {/* Üdvözlet */}
@@ -144,9 +144,9 @@ const CustomerDashboard = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-700">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Összes kiadás</h3>
-                <span className="text-blue-600 dark:text-blue-400 text-xl font-bold">€</span>
+                <span className="text-blue-600 dark:text-blue-400 text-xl font-bold">Ft</span>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalSpent} €</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalSpent} Ft</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Hamarosan...</p>
             </div>
           </div>
@@ -182,10 +182,10 @@ const CustomerDashboard = () => {
                           </div>
                         </div>
                         <Link
-                          to={`/project/${project.id}`}
+                          to="/my-projects"
                           className="px-4 py-2 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300 text-center"
                         >
-                          Részletek
+                          Munkáimhoz
                         </Link>
                       </div>
                     </div>

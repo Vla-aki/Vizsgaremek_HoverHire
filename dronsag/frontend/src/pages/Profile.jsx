@@ -255,7 +255,7 @@ const Profile = () => {
 
   // Dátum formázás
   const formatDate = (dateString) => {
-    if (!dateString) return 'Ismeretlen';
+    if (!dateString) return new Date().toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
     const date = new Date(dateString);
     return date.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
   };
@@ -311,7 +311,7 @@ const Profile = () => {
               </div>
               
               <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <FaCalendarAlt /> Tag ekkortól: {formatDate(user.member_since)}
+                <FaCalendarAlt /> Tag ekkortól: {formatDate(user.member_since || user.created_at)}
               </div>
             </div>
 
@@ -397,7 +397,7 @@ const Profile = () => {
                       <p className="font-medium text-gray-900 dark:text-white">{formData.phone || '-'}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Helyszín</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Település</p>
                       <p className="font-medium text-gray-900 dark:text-white">{formData.location || '-'}</p>
                     </div>
                   </div>
@@ -497,7 +497,7 @@ const Profile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Helyszín (Város / Megye)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Település (Város / Megye)</label>
                     <div className="relative">
                       <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                       <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Pl. Budapest"

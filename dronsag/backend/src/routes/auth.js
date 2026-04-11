@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
 
         // Felhasználó mentése
         const [result] = await pool.query(
-            'INSERT INTO users (name, email, password, role, phone) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO users (name, email, password, role, phone, member_since) VALUES (?, ?, ?, ?, ?, CURDATE())',
             [name, email, hashedPassword, role, phone || null]
         );
 
@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
         res.status(201).json({
             message: 'Sikeres regisztráció!',
             token: token,
-            user: { id: newUserId, name, email, role }
+            user: { id: newUserId, name, email, role, phone: phone || null }
         });
     } catch (error) {
         console.error('❌ Regisztrációs hiba:', error);
@@ -70,7 +70,8 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'titkos_kulcs', { expiresIn: '1d' });
 
-        res.json({ message: 'Sikeres bejelentkezés!', token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+        const { password: _, ...userWithoutPassword } = user;
+        res.json({ message: 'Sikeres bejelentkezés!', token, user: userWithoutPassword });
     } catch (error) {
         console.error('❌ Bejelentkezési hiba:', error);
         res.status(500).json({ message: 'Szerver hiba a bejelentkezés során.' });
@@ -83,7 +84,7 @@ router.get('/pilots', async (req, res) => {
         const query = `
             SELECT id, name, location, hourly_rate as hourlyRate, availability, 
                    completed_jobs as completedProjects, rating, reviews_count as reviews, 
-                   verified, profile_image as image, bio as description, member_since as memberSince
+                   verified, profile_image as image, bio as description, COALESCE(member_since, DATE(created_at)) as memberSince
             FROM users 
             WHERE role = 'driver'
             ORDER BY rating DESC, completed_jobs DESC
@@ -184,7 +185,8 @@ router.put('/switch-role', authMiddleware, async (req, res) => {
         const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [req.user.id]);
         const user = users[0];
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'titkos_kulcs', { expiresIn: '1d' });
-        res.json({ success: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role, profile_image: user.profile_image } });
+        const { password: _, ...userWithoutPassword } = user;
+        res.json({ success: true, token, user: userWithoutPassword });
     } catch (error) {
         res.status(500).json({ message: 'Szerver hiba a szerepkör váltásakor.' });
     }

@@ -28,13 +28,17 @@ import ProjectBids from './pages/customer/ProjectBids';
 
 // Drone pages
 import DroneDashboard from './pages/drone/DroneDashboard';
-import AvailableProjects from './pages/drone/AvailableProjects';
 import MyBids from './pages/drone/MyBids';
 import MyContracts from './pages/drone/MyContracts';
 import Earnings from './pages/drone/Earnings';
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashBoard.jsx';
+
+// Téma beállítása az oldal betöltésekor, hogy frissítésnél is megmaradjon
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.classList.add('dark');
+}
 
 function App() {
   return (
@@ -100,11 +104,6 @@ function App() {
           <Route path="/drone-dashboard" element={
             <PrivateRoute requiredRole="driver">
               <DroneDashboard />
-            </PrivateRoute>
-          } />
-          <Route path="/available-projects" element={
-            <PrivateRoute requiredRole="driver">
-              <AvailableProjects />
             </PrivateRoute>
           } />
           <Route path="/my-bids" element={
