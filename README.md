@@ -75,7 +75,7 @@ Ez a projekt a Docker és Docker Compose, valamint a mellékelt gyorsindító `.
 Nyiss egy terminált a projekt gyökérkönyvtárában (ahol a `start.bat` és a `docker-compose.yml` fájlok is találhatók), és futtasd a szkriptet:
 
 ```bash
-start.bat
+.\start
 ```
 
 A szkript a következőket végzi el automatikusan:
@@ -94,6 +94,6 @@ A sikeres indítást követően az alkalmazás részei az alábbi alapértelmeze
 A projekt teljes leállításához futtasd a leállító szkriptet a projekt gyökerében:
 
 ```bash
-stop.bat
+.\stop
 ```
 *(Ez automatikusan leállítja a Docker konténereket és bezárja a háttérben maradt frontend node/cmd folyamatokat.)*
