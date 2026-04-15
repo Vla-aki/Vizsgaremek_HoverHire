@@ -49,7 +49,7 @@ A projekt elsődleges célja egy olyan aktív, kreatív ökoszisztéma kialakít
 * Selenium WebDriver – Frontend E2E (End-to-End) tesztelés automatizált böngészővel a főbb felhasználói folyamatokra
 * Docker & Docker Compose – A teljes architektúra konténerizált futtatásához
 
-##Fejlesztők és Felelősségi körök
+## Fejlesztők és Felelősségi körök
 A projektet a modern agilis szoftverfejlesztési módszertanoknak megfelelően építettük fel. Mindketten Full-Stack Fejlesztőként vettünk részt a munkában, így a kliensoldali (Frontend) és a szerveroldali (Backend) architektúra kialakításában is teljeskörűen dolgoztunk.
 
 A kód minőségének biztosítása, a határidők betartása és a hatékony projektmenedzsment érdekében a funkciókat és a technikai felelősségi köröket az alábbiak szerint osztottuk fel:
