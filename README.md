@@ -49,19 +49,28 @@ A projekt elsődleges célja egy olyan aktív, kreatív ökoszisztéma kialakít
 * Selenium WebDriver – Frontend E2E (End-to-End) tesztelés automatizált böngészővel a főbb felhasználói folyamatokra
 * Docker & Docker Compose – A teljes architektúra konténerizált futtatásához
 
-## Fejlesztők és Felelősségi körök
+##Fejlesztők és Felelősségi körök
+A projektet a modern agilis szoftverfejlesztési módszertanoknak megfelelően építettük fel. Mindketten Full-Stack Fejlesztőként vettünk részt a munkában, így a kliensoldali (Frontend) és a szerveroldali (Backend) architektúra kialakításában is teljeskörűen dolgoztunk.
 
-A projektet a modern agilis szoftverfejlesztési elveknek megfelelően építettük fel.
+A kód minőségének biztosítása, a határidők betartása és a hatékony projektmenedzsment érdekében a funkciókat és a technikai felelősségi köröket az alábbiak szerint osztottuk fel:
 
-**Csák Roland (Full-Stack Fejlesztő / Alapító)**
-* **Kliensoldali Architektúra és UI/UX:** A teljes React.js (Vite) frontend alapjainak lefektetése. A Tailwind CSS alapú designrendszer, a reszponzív elrendezések és a beépített sötét téma (Dark Mode) elkészítése.
-* **Projekt- és Ajánlatkezelés (Frontend):** A többlépéses projektfeladási folyamat, a komplex pilótakereső szűrőrendszer és a dinamikus dashboard-ok (Megbízó/Pilóta) vizuális megvalósítása.
-* **Automatizált Tesztelés (E2E):** A Selenium WebDriver alapú end-to-end tesztek írása (regisztráció, projektfeladás, szűrés), biztosítva a kritikus felhasználói folyamatok megbízhatóságát.
+##Csák Roland (Full-Stack Fejlesztő)
+Teljeskörű Rendszerarchitektúra és Adatbázis-tervezés (Backend): A teljes Node.js (Express) backend szerver és a RESTful API végpontok logikai felépítése. A komplett MySQL relációs adatbázis-séma (init.sql) megtervezése az alapoktól, beleértve a táblák közötti komplex kapcsolatokat (pl. projects, bids, contracts, users), a megszorításokat (FOREIGN KEY, ON DELETE CASCADE) és az indexelést az optimális teljesítmény érdekében.
 
-**Szalai Bence (Full-Stack Fejlesztő / Társalapító)**
-* **Adatbázis-tervezés és Backend Logika:** A MySQL relációs adatbázis sémájának megtervezése, a táblák normalizálása és az összetett SQL lekérdezések optimalizálása (projektek, ajánlatok, szerződések, üzenetek integrációja).
-* **Hitelesítés és Kriptográfia:** A Node.js szerveren a JWT alapú autentikáció és a Bcrypt jelszótitkosítás API szintű implementálása.
-* **Fájlkezelés és Infrastruktúra (DevOps):** A Multer alapú profilkép- és portfólió fájlfeltöltő modulok megírása, a teljes alkalmazás (MySQL, phpMyAdmin, Backend, Frontend) Docker Compose alapú konténerizálása, valamint a Jest backend unit/integrációs tesztek elkészítése.
+Komplex Üzleti Logika és API Fejlesztés (Backend): A platform legbonyolultabb szerveroldali funkcióinak leprogramozása. A többlépcsős, tranzakció-alapú szerződéskötési (contracts.js) és profilfrissítési (auth.js) folyamatok implementálása. A valós idejűnek ható üzenetküldő rendszer (messages.js) és a hozzá kapcsolódó, automatizált értesítési logika (notifications.js) teljes szerveroldali hátterének kialakítása, komplex SQL lekérdezésekkel.
+
+Dinamikus Felhasználói Felületek és Állapotkezelés (Frontend): A teljes React.js (Vite) frontend architektúra és a komponens-hierarchia megtervezése. A szerepkör-alapú, dinamikus útvonalválasztás (React Router DOM, PrivateRoute.jsx) és a globális állapotkezelés (AuthContext) felépítése. A komplex, adatvezérelt vezérlőpultok (Admin, Megbízó, Pilóta) és a többlépcsős projektlétrehozó űrlap (CreateProject.jsx) teljeskörű implementálása.
+
+Interaktív Komponensek és Vizuális Megvalósítás (Frontend): A felhasználói interakciót igénylő legösszetettebb komponensek, mint a lebegő chat ablak (FloatingChat.jsx) és a dinamikus adatokat megjelenítő, szűrhető és lapozható listák (FindWork.jsx, FindFreelancers.jsx, MyProjects.jsx) fejlesztése. A reszponzív, "dark mode"-ot is támogató felhasználói felület kialakítása a Tailwind CSS keretrendszer segítségével, valamint az adatvizualizációs diagramok (Earnings.jsx, Billing.jsx) integrálása.
+
+##Szalai Bence (Full-Stack Fejlesztő)
+Infrastruktúra, Konténerizáció és DevOps (Backend): A teljes alkalmazás-architektúra konténerizálása a hordozhatóság és a fejlesztői környezet egyszerűsítése érdekében. A Dockerfile és a docker-compose.yml konfigurációk megírása a frontend, a backend és az adatbázis-szerver párhuzamos, elszigetelt futtatásához. A környezeti változók (.env) kezelésének és a belső hálózati kommunikációnak a beállítása.
+
+Alapvető API Végpontok és Biztonság (Backend): A felhasználói hitelesítés biztonsági rétegének megtervezése és implementálása a jsonwebtoken segítségével (authMiddleware.js). A biztonságos jelszókezelés (bcryptjs) integrálása a regisztrációs és bejelentkezési folyamatokba. A fájlkezelés szerveroldali logikájának kialakítása a multer könyvtárral (upload.js), amely a profilképek és portfólió elemek feltöltését biztosítja.
+
+Automatizált Tesztelés és Minőségbiztosítás (Backend): A backend API megbízhatóságának és stabilitásának garantálása érdekében a teljeskörű automatizált tesztkörnyezet felépítése. A Jest és Supertest keretrendszerek segítségével unit és integrációs tesztek írása az összes API végponthoz (/tests), beleértve a jogosultságkezelést, az adatbázis-műveleteket és a hibakezelést.
+
+Alapvető UI Komponensek és Statikus Oldalak (Frontend): A weboldal fő navigációs struktúrájának és alapvető elrendezésének kialakítása a közös komponensek (Navbar.jsx, Footer.jsx, Layout.jsx) létrehozásával. A statikus, informatív oldalak (pl. About.jsx, Contact.jsx, FAQ.jsx, Terms.jsx) teljeskörű frontend implementálása a React keretrendszeren belül.
 
 ## Telepítés és Futtatás (Docker)
 
